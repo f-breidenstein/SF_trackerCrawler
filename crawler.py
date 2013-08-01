@@ -21,7 +21,7 @@ def loadProjectnames():
 	return projectNames
 
 # Wants a project name and checks the website 
-def gettracker(projName):
+def getTracker(projName):
 	tracker = []
 	url = "http://sourceforge.net/p/" + projName + "/_list/tickets"
 	response = urllib2.urlopen(url)
@@ -48,7 +48,7 @@ def writeTracker(allTracker):
 # Run Bicho on every Tracker
 # function wants a list with urls, username, password, table name and hostname
 def populateDB(allTracker,user,passwd,table,hostname):
-	cmd = "./bicho -g --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 3 -b allura -u "
+	cmd = "/home/fleaz/Bicho/bicho -g --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 2 -b allura -u "
 	
 	for proj in allTracker:
 		for line in proj:
@@ -56,20 +56,36 @@ def populateDB(allTracker,user,passwd,table,hostname):
 			#print fullCMD
 			os.system(fullCMD)
 
+# Check if the project is using the internal Bugtracker
+def checkIfUsingSF(projectNames):
+	newList = []
+	print "Not using Sourceforge:"
+	for proj in projectNames:
+		tracker = getTracker(proj)
+		if (len(tracker) == 0):
+			print ">> " + proj
+		else:
+			newList.append(proj)
+	return newList
+
+
 #####################
-# Main program
+# Main program      #
+#####################
+
 projectNames = loadProjectnames()
 allTracker = []
 
+# Check if the project is using the internal Bugtracker
+projectNames = checkIfUsingSF(projectNames)
+
 # Get the tracker for every single project in the list 
 for proj in projectNames:
-	allTracker.append(gettracker(proj))
+	allTracker.append(getTracker(proj))
 
+# Write a list of all trackers into a file
+writeTracker(allTracker)
+
+# Run Bicho and write everything to the database
 populateDB(allTracker,"root","1234abc","bicho","localhost")
-#writeTracker(allTracker)
 
-
-# Print out every url for debuging purpose
-#for proj in allTracker:
-#	for url in proj:
-#		print url
