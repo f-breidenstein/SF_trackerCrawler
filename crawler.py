@@ -5,6 +5,7 @@ import urllib2
 import csv
 import string
 import sys
+import os
 from BeautifulSoup import BeautifulSoup
 
 
@@ -52,7 +53,8 @@ def populateDB(allTracker,user,passwd,table,hostname):
 	for proj in allTracker:
 		for line in proj:
 			fullCMD = cmd + line
-			print fullCMD
+			#print fullCMD
+			os.system(fullCMD)
 
 #####################
 # Main program
