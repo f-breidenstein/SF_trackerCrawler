@@ -4,6 +4,7 @@ import urllib
 import urllib2
 import csv
 import string
+import getpass
 import sys
 import os
 from BeautifulSoup import BeautifulSoup
@@ -48,7 +49,8 @@ def writeTracker(allTracker):
 # Run Bicho on every Tracker
 # function wants a list with urls, username, password, table name and hostname
 def populateDB(allTracker,user,passwd,table,hostname):
-	cmd = "/home/fleaz/Bicho/bicho -g --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 2 -b allura -u "
+	username = getpass.getuser()
+	cmd = "/home/" + username + "/Bicho/bicho -g --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 2 -b allura -u "
 	
 	for proj in allTracker:
 		for line in proj:
