@@ -29,7 +29,7 @@ def getTracker(projName):
 	the_page = response.read()
 	pool = BeautifulSoup(the_page)
 	result = pool.findAll('ul')
-	for x in result[2]:
+	for x in result[len(result)-1]:
 		if (unicode(x).find('/p/') != -1):
 			tracker.append("http://sourceforge.net/rest" +
 							unicode(x).split("href=")[1].split('\"')[1])
