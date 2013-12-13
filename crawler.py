@@ -17,29 +17,33 @@ def loadProjectnames():
 	f = open('projects.csv','r+')
 	reader = csv.reader(f,delimiter=',')
 	for row in reader:
-		projectNames.append(row[0])
+		projectNames.append(row[0].lower().replace(" ",""))
 	f.close()
 	return projectNames
 
-# Wants a project name and checks the website 
+# Wants a project name and checks the website
 def getTracker(projName):
 	tracker = []
 	url = "http://sourceforge.net/p/" + projName + "/_list/tickets"
-	response = urllib2.urlopen(url)
-	the_page = response.read()
-	pool = BeautifulSoup(the_page)
-	result = pool.findAll('ul')
-	for x in result[len(result)-1]:
-		if (unicode(x).find('/p/') != -1):
-			tracker.append("http://sourceforge.net/rest" +
-							unicode(x).split("href=")[1].split('\"')[1])
+	try:
+		response = urllib2.urlopen(url)
+		the_page = response.read()
+		pool = BeautifulSoup(the_page)
+		result = pool.findAll('ul')
+		for x in result[len(result)-1]:
+			if (unicode(x).find('/p/') != -1):
+				tracker.append("http://sourceforge.net/rest" +
+								unicode(x).split("href=")[1].split('\"')[1])
+	except:
+		return tracker
+
 	return tracker
 
 # Write all tracker to a file
 # IF THE FILE ALREADY EXISTS IT WILL BE OVERWRITTEN!!
 def writeTracker(allTracker):
 	g = open('tracker.csv','w')
-	writer = csv.DictWriter(g,["url"]) 
+	writer = csv.DictWriter(g,["url"])
 	for proj in allTracker:
 		for line in proj:
 			newRow = {"url" : line}
@@ -50,7 +54,7 @@ def writeTracker(allTracker):
 # function wants a list with urls, username, password, table name and hostname
 def populateDB(allTracker,user,passwd,table,hostname):
 	username = getpass.getuser()
-	cmd = "/home/" + username + "/Bicho/bicho -g --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 2 -b allura -u "
+	cmd = "/home/" + username + "/Bicho/bicho --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 2 -b allura -u "
 	
 	for proj in allTracker:
 		for line in proj:
@@ -80,13 +84,15 @@ allTracker = []
 
 # Check if the project is using the internal Bugtracker
 projectNames = checkIfUsingSF(projectNames)
+# TODO: Percent not using Sf tracker
 
-# Get the tracker for every single project in the list 
+# Get the tracker for every single project in the list
 for proj in projectNames:
 	allTracker.append(getTracker(proj))
 
 # Write a list of all trackers into a file
 writeTracker(allTracker)
+# TODO: Load list and run Bicho
 
 # Run Bicho and write everything to the database
 populateDB(allTracker,"root","1234abc","bicho","localhost")
