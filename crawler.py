@@ -83,13 +83,19 @@ def populateDB(allTracker,user,passwd,dbname,hostname):
 # Check if the project is using the internal Bugtracker
 def checkIfUsingSF(projectNames):
 	newList = []
+	notUsing = 0
+	using = 0
 	print "Not using Sourceforge:"
 	for proj in projectNames:
 		tracker = getTracker(proj)
 		if (len(tracker) == 0):
 			print ">> " + proj
+			notUsing += 1
 		else:
 			newList.append(proj)
+			using += 1
+	percentage = float(using) / (float(len(projectNames))/100)
+	print str(percentage) + "% using the internal SF Tracker"
 	return newList
 
 
@@ -113,5 +119,5 @@ writeTracker(allTracker)
 #loadTracker(allTracker)
 
 # Run Bicho and write everything to the database
-populateDB(allTracker,"root","1234abc","bicho","localhost")
+#populateDB(allTracker,"root","1234abc","bicho","localhost")
 
