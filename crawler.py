@@ -82,7 +82,6 @@ def populateDB(allTracker,user,passwd,dbname,hostname):
 
 # Check if the project is using the internal Bugtracker
 def checkIfUsingSF(projectNames):
-	newList = []
 	notUsing = 0
 	using = 0
 	print "Not using Sourceforge:"
@@ -92,11 +91,11 @@ def checkIfUsingSF(projectNames):
 			print ">> " + proj
 			notUsing += 1
 		else:
-			newList.append(proj)
+			allTracker.append(tracker)
 			using += 1
 	percentage = float(using) / (float(len(projectNames))/100)
 	print str(percentage) + "% using the internal SF Tracker"
-	return newList
+	return allTracker
 
 
 #####################
@@ -107,12 +106,7 @@ projectNames = loadProjectnames()
 allTracker = []
 
 # Check if the project is using the internal Bugtracker
-projectNames = checkIfUsingSF(projectNames)
-# TODO: Percent not using Sf tracker
-
-# Get the tracker for every single project in the list
-for proj in projectNames:
-	allTracker.append(getTracker(proj))
+allTracker = checkIfUsingSF(projectNames)
 
 # Write a list of all trackers into a file
 writeTracker(allTracker)
