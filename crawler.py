@@ -1,12 +1,12 @@
 #! /usr/bin/env python2
 
+import csv
+import getpass
+import os
+import string
+import sys
 import urllib
 import urllib2
-import csv
-import string
-import getpass
-import sys
-import os
 from BeautifulSoup import BeautifulSoup
 
 
@@ -50,16 +50,34 @@ def writeTracker(allTracker):
 			writer.writerow(newRow)
 	g.close()
 
+
+# Load Trackerlist from File
+def loadTracker(allTracker):
+	try:
+		g = open('tracker.csv','rb')
+	except IOError:
+		print "File not found!"
+		return
+
+	reader = csv.reader(g)
+	for url in reader:
+		allTracker.append(url)
+	return allTracker
+
 # Run Bicho on every Tracker
 # function wants a list with urls, username, password, table name and hostname
-def populateDB(allTracker,user,passwd,table,hostname):
+def populateDB(allTracker,user,passwd,dbname,hostname):
 	username = getpass.getuser()
-	cmd = "/home/" + username + "/Bicho/bicho --db-hostname-out=" + hostname + " --db-user-out=" + user + " --db-password-out=" + passwd + " --db-database-out=" + table + " -d 2 -b allura -u "
+	cmd = ( "/home/" + username + "/Bicho/bicho --db-hostname-out=" + hostname
+		+ " --db-user-out=" + user
+		+ " --db-password-out=" + passwd
+		+ " --db-database-out=" + dbname
+		+ " -d 2 -b allura -u "
+		)
 	
 	for proj in allTracker:
 		for line in proj:
 			fullCMD = cmd + line
-			#print fullCMD
 			os.system(fullCMD)
 
 # Check if the project is using the internal Bugtracker
@@ -92,7 +110,7 @@ for proj in projectNames:
 
 # Write a list of all trackers into a file
 writeTracker(allTracker)
-# TODO: Load list and run Bicho
+#loadTracker(allTracker)
 
 # Run Bicho and write everything to the database
 populateDB(allTracker,"root","1234abc","bicho","localhost")
