@@ -62,7 +62,7 @@ def loadTracker(allTracker):
 	reader = csv.reader(g)
 	for url in reader:
 		allTracker.append(url)
-	return allTracker
+	g.close()
 
 # Run Bicho on every Tracker
 # function wants a list with urls, username, password, table name and hostname
